@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/inancgumus/screen"
@@ -18,6 +17,11 @@ func main() {
 
 		maxFrames = 1000
 		speed     = time.Second / 50
+
+		// drawing buffer length
+		// *2 for extra spaces
+		// +1 for newlines
+		bufferLen = (width*2 + 1) * height
 	)
 
 	var (
@@ -34,7 +38,7 @@ func main() {
 	}
 
 	// a drawing buffer
-	buffer := make([]rune, 0, width*height)
+	buffer := make([]rune, 0, bufferLen)
 
 	// clear the screen
 	screen.Clear()
@@ -72,7 +76,6 @@ func main() {
 		}
 		// print the buffer
 		screen.MoveTopLeft()
-		fmt.Print(string(buffer))
 
 		// slow down the animation
 		time.Sleep(speed)
