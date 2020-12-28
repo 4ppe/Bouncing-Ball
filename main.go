@@ -24,7 +24,12 @@ func main() {
 		board[column] = make([]bool, height)
 	}
 
+	// A drawing buffer
+	buffer := make([]rune, 0, width*height)
+
 	board[12][2] = true // Random test location
+
+	buffer = buffer[:0] // reuse buffer
 
 	// Print the board directly to the console
 	for y := range board[0] {
@@ -33,10 +38,12 @@ func main() {
 			if board[x][y] {
 				cell = cellBall
 			}
-			fmt.Print(string(cell), " ")
+			//fmt.Print(string(cell), " ")
+			buffer = append(buffer, cell, ' ')
 		}
-		fmt.Println()
+		buffer = append(buffer, '\n')
 	}
+	fmt.Print(string(buffer))
 
 	// for {
 	// 	screen.Clear()
