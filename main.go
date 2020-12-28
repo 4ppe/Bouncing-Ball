@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"time"
+
+	"github.com/inancgumus/screen"
 )
 
 func main() {
-
-	// var xVelocity, yVelocity int
 
 	const (
 		width  = 50
@@ -14,41 +15,66 @@ func main() {
 
 		cellEmpty = ' '
 		cellBall  = '⚾'
+
+		maxFrames = 1000
+		speed     = time.Second / 50
 	)
 
-	var cell rune // Current cell (for caching)
+	var (
+		cell rune // current cell (for caching)
 
-	// Create the board
+		positionX, positionY int    // ball position
+		velocityX, velocityY = 1, 1 // velocities
+	)
+
+	// create the board
 	board := make([][]bool, width)
 	for column := range board {
 		board[column] = make([]bool, height)
 	}
 
-	// A drawing buffer
+	// a drawing buffer
 	buffer := make([]rune, 0, width*height)
 
-	board[12][2] = true // Random test location
+	// clear the screen
+	screen.Clear()
 
-	buffer = buffer[:0] // reuse buffer
+	for i := 0; i < maxFrames; i++ {
+		// calculate the next ball position
+		positionX += velocityX
+		positionY += velocityY
 
-	// Print the board directly to the console
-	for y := range board[0] {
-		for x := range board {
-			cell = cellEmpty
-			if board[x][y] {
-				cell = cellBall
-			}
-			//fmt.Print(string(cell), " ")
-			buffer = append(buffer, cell, ' ')
+		// reverse its direction if the ball hits a border
+		if positionX == 0 || positionX == width-1 {
+			velocityX *= -1
 		}
-		buffer = append(buffer, '\n')
-	}
-	fmt.Print(string(buffer))
+		if positionY == 0 || positionY == height-1 {
+			velocityY *= -1
+		}
 
-	// for {
-	// 	screen.Clear()
-	// 	time.Sleep(time.Second / 20)
-	// 	screen.MoveTopLeft()
-	// 	//...
-	// }
+		// put the new ball
+		board[positionX][positionY] = true
+
+		// rewind the buffer for reuse
+		buffer = buffer[:0]
+
+		// print the board directly to the console
+		for y := range board[0] {
+			for x := range board {
+				cell = cellEmpty
+				if board[x][y] {
+					cell = cellBall
+					board[x][y] = false // remove the previous ball
+				}
+				buffer = append(buffer, cell, ' ')
+			}
+			buffer = append(buffer, '\n')
+		}
+		// print the buffer
+		screen.MoveTopLeft()
+		fmt.Print(string(buffer))
+
+		// slow down the animation
+		time.Sleep(speed)
+	}
 }
