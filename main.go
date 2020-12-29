@@ -51,6 +51,7 @@ func main() {
 	screen.Clear()
 
 	for i := 0; i < maxFrames; i++ {
+
 		// calculate the next ball position
 		positionX += velocityX
 		positionY += velocityY
@@ -81,6 +82,7 @@ func main() {
 			}
 			buffer = append(buffer, '\n')
 		}
+
 		// print the buffer
 		screen.MoveTopLeft()
 		fmt.Print(string(buffer))
