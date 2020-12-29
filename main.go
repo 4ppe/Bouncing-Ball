@@ -1,35 +1,42 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/inancgumus/screen"
+	"github.com/mattn/go-runewidth"
 )
 
 func main() {
 
 	const (
-		width  = 50
-		height = 10
-
 		cellEmpty = ' '
 		cellBall  = '⚾'
 
 		maxFrames = 1000
-		speed     = time.Second / 50
-
-		// drawing buffer length
-		// *2 for extra spaces
-		// +1 for newlines
-		bufferLen = (width*2 + 1) * height
+		speed     = time.Second / 20
 	)
-
 	var (
-		cell rune // current cell (for caching)
-
+		cell                 rune   // current cell (for caching)
 		positionX, positionY int    // ball position
 		velocityX, velocityY = 1, 1 // velocities
 	)
+
+	// get current terminal width and height
+	width, height := screen.Size()
+
+	// get the rune width of the ball emoji
+	ballWidth := runewidth.RuneWidth(cellBall)
+
+	// adjust the width and height
+	width /= ballWidth
+	height-- // there is a 1 pixel border in my terminal
+
+	// drawing buffer length
+	// *2 for extra spaces
+	// +1 for newlines
+	bufferLen := ((width*2 + 1) * height) * 50
 
 	// create the board
 	board := make([][]bool, width)
@@ -76,6 +83,7 @@ func main() {
 		}
 		// print the buffer
 		screen.MoveTopLeft()
+		fmt.Print(string(buffer))
 
 		// slow down the animation
 		time.Sleep(speed)
